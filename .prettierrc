@@ -1,5 +1,6 @@
 {
     "tabWidth": 4,
     "singleQuote": false,
-    "trailingComma": "es5"
+    "trailingComma": "es5",
+    "bracketSameLine": false
 }
