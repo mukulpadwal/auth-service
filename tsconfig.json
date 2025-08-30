@@ -6,12 +6,15 @@
         "moduleResolution": "node",
         "target": "ESNext",
         "types": ["node", "jest"],
+        "lib": ["ES6"],
         "sourceMap": true,
         "strict": true,
         "esModuleInterop": true,
         "verbatimModuleSyntax": true,
         "isolatedModules": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules", "dist", "tests/**/*.ts", "coverage"]

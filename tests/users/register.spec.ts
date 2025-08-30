@@ -24,7 +24,7 @@ describe("POST /auth/register", () => {
             expect(response.statusCode).toBe(201);
         });
 
-        it("Should return valid JSON response", async () => {
+        it("should return valid JSON response", async () => {
             // Arrange
             const userData = {
                 firstName: "Mukul",
@@ -43,6 +43,12 @@ describe("POST /auth/register", () => {
             expect(response.headers["content-type"]).toEqual(
                 expect.stringContaining("json")
             );
+        });
+
+        it("should persist the user in the database", async () => {
+            // Arrange
+            // Act
+            // Assert
         });
     });
 
