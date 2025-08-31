@@ -14,8 +14,9 @@
         "isolatedModules": true,
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "strictPropertyInitialization": false
     },
-    "include": ["src/**/*.ts"],
+    "include": ["src/**/*.ts", "src/config/index.ts"],
     "exclude": ["node_modules", "dist", "tests/**/*.ts", "coverage"]
 }

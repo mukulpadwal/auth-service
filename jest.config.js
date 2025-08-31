@@ -5,7 +5,7 @@ export default {
     verbose: true,
     extensionsToTreatAsEsm: [".ts"],
     transform: {
-        "^.+\\.ts$": ["ts-jest"],
+        "^.+\\.ts$": ["ts-jest", { useESM: true }],
     },
     moduleFileExtensions: ["ts", "js", "json"],
     testMatch: ["**/tests/**/*.test.ts", "**/tests/**/*.spec.ts"],
