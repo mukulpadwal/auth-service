@@ -92,6 +92,28 @@ describe("POST /auth/register", () => {
             expect(users[0].age).toBe(userData.age);
             expect(users[0].email).toBe(userData.email);
         });
+
+        it("should return id of the created user", async () => {
+            // Arrange
+            const userData = {
+                firstName: "Mukul",
+                lastName: "Padwal",
+                age: 24,
+                email: "mukulpadwal.me@gmail.com",
+                password: "strongpassword",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/api/v1/auth/register")
+                .send(userData);
+
+            // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(users[0].id).toEqual(response.body.id);
+        });
     });
 
     // Sad path
