@@ -2,8 +2,8 @@ import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";
 import { AppDataSource } from "../../src/config/data-source";
-import { truncateTables } from "../utils";
 import { User } from "../../src/entity/User";
+import { Roles } from "../../src/constants";
 
 // Used to group multiple test cases
 describe("POST /auth/register", () => {
@@ -17,7 +17,8 @@ describe("POST /auth/register", () => {
     // Will run before every test case
     beforeEach(async () => {
         // Database truncate
-        await truncateTables(connection);
+        await connection.dropDatabase();
+        await connection.synchronize();
     });
 
     // Will run once after executing all the test cases
@@ -113,6 +114,29 @@ describe("POST /auth/register", () => {
             const users = await userRepository.find();
 
             expect(users[0].id).toEqual(response.body.id);
+        });
+
+        it("should assign customer role to the registered user", async () => {
+            // Arrange
+            const userData = {
+                firstName: "Mukul",
+                lastName: "Padwal",
+                age: 24,
+                email: "mukulpadwal.me@gmail.com",
+                password: "strongpassword",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/api/v1/auth/register")
+                .send(userData);
+
+            // Assert
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            expect(users[0]).toHaveProperty("role");
+            expect(users[0].role).toBe(Roles.CUSTOMER);
         });
     });
 
