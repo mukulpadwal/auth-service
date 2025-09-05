@@ -190,5 +190,26 @@ describe("POST /auth/register", () => {
     });
 
     // Sad path
-    describe("Few required fields are missing", () => {});
+    describe("Few required fields are missing", () => {
+        it("should return 400 status code if email field is missing", async () => {
+            const userData = {
+                firstName: "Mukul",
+                lastName: "Padwal",
+                age: 24,
+                password: "strongpassword",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/api/v1/auth/register")
+                .send(userData);
+
+            const userRepository = connection.getRepository(User);
+            const users = await userRepository.find();
+
+            // Assert
+            expect(response.statusCode).toBe(400);
+            expect(users).toHaveLength(0);
+        });
+    });
 });
