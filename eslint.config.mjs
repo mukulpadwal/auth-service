@@ -11,7 +11,7 @@ export default tseslint.config(
             "dist",
             "node_modules",
             "eslint.config.mjs",
-            "jest.config.js",
+            "jest.config.ts",
             "coverage",
             "tests",
         ],

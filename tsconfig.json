@@ -10,7 +10,6 @@
         "sourceMap": true,
         "strict": true,
         "esModuleInterop": true,
-        "verbatimModuleSyntax": true,
         "isolatedModules": true,
         "skipLibCheck": true,
         "emitDecoratorMetadata": true,
