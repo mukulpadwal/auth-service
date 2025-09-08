@@ -5,6 +5,7 @@ import { AppDataSource } from "../../src/config/data-source";
 import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
 import { isJwt } from "../utils";
+import { RefreshToken } from "../../src/entity/RefreshToken";
 
 // Used to group multiple test cases
 describe("POST /auth/register", () => {
@@ -214,8 +215,6 @@ describe("POST /auth/register", () => {
             const cookies =
                 (response.headers as unknown as Headers)["set-cookie"] || [];
 
-            console.log(response.headers);
-
             cookies.forEach((cookie) => {
                 if (cookie.startsWith("accessToken=")) {
                     accessToken = cookie.split(";")[0].split("=")[1];
@@ -232,6 +231,35 @@ describe("POST /auth/register", () => {
             // Check the format of the tokens
             expect(isJwt(accessToken)).toBeTruthy();
             expect(isJwt(refreshToken)).toBeTruthy();
+        });
+
+        it("should store and persist the refresh token in the database", async () => {
+            // Arrange
+            const userData = {
+                firstName: "Mukul",
+                lastName: "Padwal",
+                age: 24,
+                email: "mukulpadwal.me@gmail.com",
+                password: "strongpassword",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/api/v1/auth/register")
+                .send(userData);
+
+            // Assert
+            const refreshTokenRepository =
+                connection.getRepository(RefreshToken);
+            // const refreshTokens = await refreshTokenRepository.find();
+            const refreshTokens = await refreshTokenRepository
+                .createQueryBuilder("refreshToken")
+                .where("refreshToken.userId = :userId", {
+                    userId: (response.body as Record<string, string>).id,
+                })
+                .getMany();
+
+            expect(refreshTokens).toHaveLength(1);
         });
     });
 
