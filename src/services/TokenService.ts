@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
-import { JwtPayload, sign } from "jsonwebtoken";
+import { fileURLToPath } from "node:url";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import createHttpError from "http-errors";
 import { Config } from "../config";
 import { Repository } from "typeorm";
@@ -14,6 +15,9 @@ export class TokenService {
         let privateKey: Buffer;
 
         try {
+            const __filename = fileURLToPath(import.meta.url);
+            const __dirname = path.dirname(__filename);
+
             privateKey = fs.readFileSync(
                 path.join(__dirname, "../../certs/privateKey.pem")
             );
@@ -23,7 +27,7 @@ export class TokenService {
             throw error;
         }
 
-        const accessToken = sign(payload, privateKey, {
+        const accessToken = jwt.sign(payload, privateKey, {
             algorithm: "RS256",
             expiresIn: "1h",
             issuer: "auth-service",
@@ -33,7 +37,7 @@ export class TokenService {
     }
 
     generateRefreshToken(payload: JwtPayload) {
-        const refreshToken = sign(
+        const refreshToken = jwt.sign(
             payload,
             String(Config.JWT_REFRESH_TOKEN_SECRET!),
             {

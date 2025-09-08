@@ -8,7 +8,7 @@ import { isJwt } from "../utils";
 import { RefreshToken } from "../../src/entity/RefreshToken";
 
 // Used to group multiple test cases
-describe("POST /auth/register", () => {
+describe("POST /api/v1/auth/register", () => {
     let connection: DataSource;
 
     // Will run once before executing the test cases
