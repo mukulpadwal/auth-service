@@ -5,8 +5,15 @@ import express, {
     type Response,
 } from "express";
 import type { HttpError } from "http-errors";
+import cors from "cors";
 
 const app = express();
+app.use(
+    cors({
+        origin: [String(Config.CLIENT_BASE_URL)],
+        credentials: true,
+    })
+);
 app.use(express.json());
 
 app.get("/", (_, res) => {
@@ -19,6 +26,7 @@ app.get("/", (_, res) => {
 
 import authRouter from "./routes/auth.routes";
 import logger from "./config/logger";
+import { Config } from "./config";
 
 app.use("/api/v1/auth", authRouter);
 

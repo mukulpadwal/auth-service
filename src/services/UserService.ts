@@ -44,4 +44,10 @@ export class UserService {
             throw customError;
         }
     }
+
+    async getUserByEmail(email: string) {
+        return await this.userRepository.findOne({
+            where: { email: email },
+        });
+    }
 }

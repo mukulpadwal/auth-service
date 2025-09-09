@@ -17,6 +17,7 @@ const {
     JWT_REFRESH_TOKEN_ISSUER,
     JWT_ACCESS_TOKEN_EXPIRY,
     JWT_ACCESS_TOKEN_ISSUER,
+    CLIENT_BASE_URL,
 } = process.env;
 
 export const Config = {
@@ -32,4 +33,5 @@ export const Config = {
     JWT_REFRESH_TOKEN_ISSUER,
     JWT_ACCESS_TOKEN_EXPIRY,
     JWT_ACCESS_TOKEN_ISSUER,
+    CLIENT_BASE_URL,
 };

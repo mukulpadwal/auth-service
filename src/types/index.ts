@@ -8,6 +8,6 @@ export interface UserData {
     email: string;
 }
 
-export interface RegisterUserRequest extends Request {
+export interface UserRequest extends Request {
     body: UserData;
 }
