@@ -1,6 +1,6 @@
 import type { NextFunction, Response } from "express";
 
-import type { UserRequest } from "../types";
+import type { AuthRequest, UserRequest } from "../types";
 import { UserService } from "../services/UserService";
 import type { Logger } from "winston";
 import { validationResult } from "express-validator";
@@ -101,7 +101,7 @@ export class AuthController {
 
         try {
             // Check if the user exists
-            const user = await this.userService.getUserByEmail(email);
+            const user = await this.userService.findByEmail(email);
 
             if (!user) {
                 const error = createHttpError(400, "Invalid Credentials.");
@@ -156,5 +156,11 @@ export class AuthController {
             next(error);
             return;
         }
+    }
+
+    async self(req: AuthRequest, res: Response) {
+        const user = await this.userService.findById(Number(req.auth.sub));
+
+        res.send(user);
     }
 }

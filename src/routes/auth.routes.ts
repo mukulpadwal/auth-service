@@ -14,6 +14,8 @@ import { TokenService } from "../services/TokenService";
 import { RefreshToken } from "../entity/RefreshToken";
 import loginValidator from "../validators/login-validator";
 import { CredentialService } from "../services/CredentialService";
+import authenticate from "../middlewares/authenticate";
+import { AuthRequest } from "../types";
 
 const authRouter = Router();
 
@@ -50,6 +52,10 @@ authRouter.post(
     loginValidator,
     (req: Request, res: Response, next: NextFunction) =>
         authController.login(req, res, next)
+);
+
+authRouter.get("/self", authenticate, (req: Request, res: Response) =>
+    authController.self(req as AuthRequest, res)
 );
 
 export default authRouter;

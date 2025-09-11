@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
 import request from "supertest";
 import app from "../../src/app";
 import { DataSource } from "typeorm";

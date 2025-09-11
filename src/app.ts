@@ -6,8 +6,13 @@ import express, {
 } from "express";
 import type { HttpError } from "http-errors";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import authRouter from "./routes/auth.routes";
+import logger from "./config/logger";
+import { Config } from "./config";
 
 const app = express();
+app.use(cookieParser());
 app.use(
     cors({
         origin: [String(Config.CLIENT_BASE_URL)],
@@ -23,10 +28,6 @@ app.get("/", (_, res) => {
         data: null,
     });
 });
-
-import authRouter from "./routes/auth.routes";
-import logger from "./config/logger";
-import { Config } from "./config";
 
 app.use("/api/v1/auth", authRouter);
 

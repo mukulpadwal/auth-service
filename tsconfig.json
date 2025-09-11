@@ -5,7 +5,7 @@
         "module": "ESNext",
         "moduleResolution": "node",
         "target": "ESNext",
-        "types": ["node", "jest"],
+        "types": ["node", "vitest/globals"],
         "lib": ["ES6"],
         "sourceMap": true,
         "strict": true,

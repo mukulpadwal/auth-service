@@ -18,6 +18,7 @@ const {
     JWT_ACCESS_TOKEN_EXPIRY,
     JWT_ACCESS_TOKEN_ISSUER,
     CLIENT_BASE_URL,
+    JWKS_URI_ENDPOINT,
 } = process.env;
 
 export const Config = {
@@ -34,4 +35,5 @@ export const Config = {
     JWT_ACCESS_TOKEN_EXPIRY,
     JWT_ACCESS_TOKEN_ISSUER,
     CLIENT_BASE_URL,
+    JWKS_URI_ENDPOINT,
 };
