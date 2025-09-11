@@ -17,7 +17,7 @@ import { createJWKSMock } from "mock-jwks";
 
 describe("GET /api/v1/auth/self", () => {
     let connection: DataSource;
-    let jwks;
+    let jwks: ReturnType<typeof createJWKSMock>;
 
     // Will run once before executing the test cases
     beforeAll(async () => {
@@ -111,7 +111,7 @@ describe("GET /api/v1/auth/self", () => {
         });
 
         const accessToken = jwks.token({
-            sub: user.id,
+            sub: String(user.id),
             role: user.role,
         });
 
@@ -121,5 +121,15 @@ describe("GET /api/v1/auth/self", () => {
 
         // Assert
         expect(response.body).not.toHaveProperty("password");
+    });
+
+    it("should return 401 status code if no token is passed", async () => {
+        // Arrange
+
+        // Act
+        const response = await request(app).get("/api/v1/auth/self").send();
+
+        // Assert
+        expect(response.statusCode).toBe(401);
     });
 });
