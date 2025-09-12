@@ -161,6 +161,7 @@ describe("POST /api/v1/auth/refresh", () => {
             {
                 sub: String(user.id),
                 role: user.role,
+                id: String(refreshTokenEntry.id),
             },
             Config.JWT_REFRESH_TOKEN_SECRET!,
             {
