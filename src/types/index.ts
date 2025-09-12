@@ -1,4 +1,5 @@
 import type { Request } from "express";
+import { Jwt } from "jsonwebtoken";
 
 export interface UserData {
     firstName: string;
@@ -16,5 +17,15 @@ export interface AuthRequest extends Request {
     auth: {
         sub: string;
         role: string;
+        id: string;
     };
+}
+
+export type AuthCookies = {
+    accessToken: string;
+    refreshToken: string;
+};
+
+export interface IRefreshTokenPayload extends Jwt {
+    id: string;
 }
