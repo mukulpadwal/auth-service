@@ -10,10 +10,11 @@ import express, {
 import type { HttpError } from "http-errors";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
 import authRouter from "./routes/auth.routes";
 import logger from "./config/logger";
 import { Config } from "./config";
-import helmet from "helmet";
+import ApiResponse from "./utils/ApiResponse";
 
 // Proper __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -37,12 +38,8 @@ app.get("/.well-known/jwks.json", (_, res: Response) => {
     res.status(200).send(jwksCache);
 });
 
-app.get("/", (_, res) => {
-    return res.status(200).json({
-        success: true,
-        message: "Server is healthy...",
-        data: null,
-    });
+app.get("/health-check", (_, res) => {
+    return res.json(new ApiResponse(200, "Server is healthy."));
 });
 
 app.use("/api/v1/auth", authRouter);
@@ -50,19 +47,19 @@ app.use("/api/v1/auth", authRouter);
 // Global Error Handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
-    logger.error(err.message);
+    logger.error("", err, err.message);
     const statusCode = err.statusCode || err.status || 500;
 
-    res.status(statusCode).json({
-        errors: [
+    res.status(statusCode).json(
+        new ApiResponse(statusCode, err.message, null, [
             {
                 type: err.name,
                 message: err.message,
                 path: "",
                 location: "",
             },
-        ],
-    });
+        ])
+    );
 });
 
 export default app;

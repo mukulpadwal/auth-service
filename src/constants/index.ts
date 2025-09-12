@@ -3,3 +3,9 @@ export const Roles = {
     ADMIN: "admin",
     MANAGER: "manager",
 } as const;
+
+export const CookieOptions = {
+    domain: "localhost",
+    sameSite: "strict",
+    httpOnly: true,
+} as const;

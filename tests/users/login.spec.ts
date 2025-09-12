@@ -91,7 +91,7 @@ describe("POST /api/vi/auth/login", () => {
             const userRepository = connection.getRepository(User);
             const users = await userRepository.find();
 
-            expect(users[0].id).toBe(response.body.id);
+            expect(users[0].id).toBe(response.body.data.id);
         });
 
         it("should return 400 status code for incorrect password", async () => {

@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 
-export class CredentialService {
+export default class CredentialService {
     constructor() {}
 
     async verifyPassword(password: string, passwordHash: string) {

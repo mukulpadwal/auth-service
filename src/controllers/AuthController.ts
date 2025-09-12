@@ -1,13 +1,13 @@
 import type { NextFunction, Response } from "express";
 
 import type { AuthRequest, UserRequest } from "../types";
-import { UserService } from "../services/UserService";
 import type { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { JwtPayload } from "jsonwebtoken";
-import { TokenService } from "../services/TokenService";
 import createHttpError from "http-errors";
-import { CredentialService } from "../services/CredentialService";
+import { CredentialService, TokenService, UserService } from "../services";
+import { CookieOptions } from "../constants";
+import ApiResponse from "../utils/ApiResponse";
 
 export class AuthController {
     constructor(
@@ -63,20 +63,20 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain: "localhost",
-                sameSite: "strict",
+                ...CookieOptions,
                 maxAge: 1000 * 60 * 60,
-                httpOnly: true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain: "localhost",
-                sameSite: "strict",
+                ...CookieOptions,
                 maxAge: 1000 * 60 * 60 * 24 * 365,
-                httpOnly: true,
             });
 
-            return res.status(201).json({ id: user.id });
+            return res.status(201).json(
+                new ApiResponse(201, "User registered Successfully.", {
+                    id: user.id,
+                })
+            );
         } catch (error) {
             next(error);
             return;
@@ -138,20 +138,20 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain: "localhost",
-                sameSite: "strict",
+                ...CookieOptions,
                 maxAge: 1000 * 60 * 60,
-                httpOnly: true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain: "localhost",
-                sameSite: "strict",
+                ...CookieOptions,
                 maxAge: 1000 * 60 * 60 * 24 * 365,
-                httpOnly: true,
             });
 
-            return res.status(200).json({ id: user?.id });
+            return res.json(
+                new ApiResponse(200, "User logged in successfully.", {
+                    id: user?.id,
+                })
+            );
         } catch (error) {
             next(error);
             return;
@@ -161,7 +161,12 @@ export class AuthController {
     async self(req: AuthRequest, res: Response) {
         const user = await this.userService.findById(Number(req.auth.sub));
 
-        res.json({ ...user, password: undefined });
+        return res.json(
+            new ApiResponse(200, "Details fetched", {
+                ...user,
+                password: undefined,
+            })
+        );
     }
 
     async refresh(req: AuthRequest, res: Response, next: NextFunction) {
@@ -173,6 +178,8 @@ export class AuthController {
                 next(error);
                 return;
             }
+
+            this.logger.info("Token refresh request for user", { id: user.id });
 
             const payload: JwtPayload = {
                 sub: String(user.id),
@@ -194,22 +201,17 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain: "localhost",
-                sameSite: "strict",
+                ...CookieOptions,
                 maxAge: 1000 * 60 * 60,
-                httpOnly: true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain: "localhost",
-                sameSite: "strict",
+                ...CookieOptions,
                 maxAge: 1000 * 60 * 60 * 24 * 365,
-                httpOnly: true,
             });
 
-            return res.status(200).json({});
+            return res.json(new ApiResponse(200, "Tokens refreshed"));
         } catch (error) {
-            this.logger.error("");
             next(error);
             return;
         }
@@ -221,10 +223,10 @@ export class AuthController {
             this.logger.info("Refresh token deleted", { tokenId: req.auth.id });
             this.logger.info("User logged out", { userId: req.auth.sub });
 
-            return res
-                .clearCookie("accessToken")
-                .clearCookie("refreshToken")
-                .json({});
+            res.clearCookie("accessToken");
+            res.clearCookie("refreshToken");
+
+            return res.json(new ApiResponse(200, "User logged out."));
         } catch (error) {
             next(error);
             return;

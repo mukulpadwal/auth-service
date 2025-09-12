@@ -6,7 +6,7 @@ import type { UserData } from "../types";
 import { Roles } from "../constants";
 
 // No framework related logic should be present here
-export class UserService {
+export default class UserService {
     constructor(private userRepository: Repository<User>) {}
 
     async create({ firstName, lastName, password, age, email }: UserData) {

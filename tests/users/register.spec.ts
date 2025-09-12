@@ -115,7 +115,7 @@ describe("POST /api/v1/auth/register", () => {
             const userRepository = connection.getRepository(User);
             const users = await userRepository.find();
 
-            expect(users[0].id).toEqual(response.body.id);
+            expect(users[0].id).toEqual(response.body.data.id);
         });
 
         it("should assign customer role to the registered user", async () => {
@@ -256,7 +256,7 @@ describe("POST /api/v1/auth/register", () => {
             const refreshTokens = await refreshTokenRepository
                 .createQueryBuilder("refreshToken")
                 .where("refreshToken.userId = :userId", {
-                    userId: (response.body as Record<string, string>).id,
+                    userId: (response.body.data as Record<string, string>).id,
                 })
                 .getMany();
 

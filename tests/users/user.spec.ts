@@ -90,7 +90,7 @@ describe("GET /api/v1/auth/self", () => {
             .send();
 
         // Assert
-        expect(response.body.id).toBe(user.id);
+        expect(response.body.data.id).toBe(user.id);
     });
 
     it("should not return the password field in the response", async () => {
