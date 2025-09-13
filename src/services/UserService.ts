@@ -1,8 +1,8 @@
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
-import type { UserData } from "../types";
-import { Roles } from "../constants";
-import { PrismaClient } from "../../generated/prisma";
+import type { UserData } from "../types/index.js";
+import { Roles } from "../constants/index.js";
+import { PrismaClient } from "../../generated/prisma/index.js";
 
 // No framework related logic should be present here
 export default class UserService {

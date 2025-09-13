@@ -1,9 +1,9 @@
 import { expressjwt } from "express-jwt";
-import { Config } from "../config";
+import { Config } from "../config/index.js";
 import { Request } from "express";
-import { AuthCookies, IRefreshTokenPayload } from "../types";
-import logger from "../config/logger";
-import { prisma } from "../server";
+import { AuthCookies, IRefreshTokenPayload } from "../types/index.js";
+import logger from "../config/logger.js";
+import { prisma } from "../prisma.js";
 
 export default expressjwt({
     secret: Config.JWT_REFRESH_TOKEN_SECRET!,

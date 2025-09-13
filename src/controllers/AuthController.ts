@@ -1,13 +1,17 @@
 import type { NextFunction, Response } from "express";
 
-import type { AuthRequest, UserRequest } from "../types";
+import type { AuthRequest, UserRequest } from "../types/index.js";
 import type { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { JwtPayload } from "jsonwebtoken";
 import createHttpError from "http-errors";
-import { CredentialService, TokenService, UserService } from "../services";
-import { CookieOptions } from "../constants";
-import ApiResponse from "../utils/ApiResponse";
+import {
+    CredentialService,
+    TokenService,
+    UserService,
+} from "../services/index.js";
+import { CookieOptions } from "../constants/index.js";
+import ApiResponse from "../utils/ApiResponse.js";
 
 export class AuthController {
     constructor(

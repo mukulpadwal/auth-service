@@ -4,17 +4,21 @@ import {
     type Request,
     type Response,
 } from "express";
-import { AuthController } from "../controllers/AuthController";
-import logger from "../config/logger";
-import { AuthRequest } from "../types";
+import { AuthController } from "../controllers/AuthController.js";
+import logger from "../config/logger.js";
+import { AuthRequest } from "../types/index.js";
 import {
     authenticate,
     parseRefreshToken,
     validateRefreshToken,
-} from "../middlewares";
-import { CredentialService, TokenService, UserService } from "../services";
-import { loginValidator, registerValidator } from "../validators";
-import { prisma } from "../server";
+} from "../middlewares/index.js";
+import {
+    CredentialService,
+    TokenService,
+    UserService,
+} from "../services/index.js";
+import { loginValidator, registerValidator } from "../validators/index.js";
+import { prisma } from "../prisma.js";
 
 const authRouter = Router();
 

@@ -3,8 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import createHttpError from "http-errors";
-import { Config } from "../config";
-import { PrismaClient, User } from "../../generated/prisma";
+import { Config } from "../config/index.js";
+import { PrismaClient, User } from "../../generated/prisma/index.js";
 
 export default class TokenService {
     constructor(private refreshToken: PrismaClient["refreshToken"]) {}

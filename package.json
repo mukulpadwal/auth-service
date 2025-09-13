@@ -6,21 +6,24 @@
     "author": "Mukul Padwal <mukulpadwal.me@gmail.com>",
     "type": "module",
     "main": "index.js",
-    "scripts": {
+   "scripts": {
+        "start": "cross-env NODE_ENV=prod node dist/server.js",
         "dev": "cross-env NODE_ENV=dev tsx --watch src/server.ts",
+
         "format:check": "npx prettier . --check",
         "format:fix": "npx prettier . --write",
         "lint:check": "npx eslint .",
         "lint:fix": "npx eslint . --fix",
-        "test": "cross-env NODE_ENV=test vitest",
-        "prepare": "husky",
         "type-check": "tsc --noEmit",
         "build": "tsc",
+        "prepare": "husky",
+        "test": "cross-env NODE_ENV=test vitest",
         "generate:prisma": "npx prisma generate",
-        "db:push:dev": "cross-env NODE_ENV=dev npx prisma db push",
-        "db:push:test": "cross-env NODE_ENV=test npx prisma db push --skip-generate",
-        "db:migrate:dev": "cross-env NODE_ENV=dev npx prisma migrate dev",
-        "db:migrate:test": "cross-env NODE_ENV=test npx prisma migrate reset --force"
+        "db:migrate:dev": "cross-env NODE_ENV=dev node scripts/prisma.js migrate dev",
+        "db:migrate:test": "cross-env NODE_ENV=test node scripts/prisma.js migrate dev --skip-generate",
+        "db:migrate:prod": "cross-env NODE_ENV=prod node scripts/prisma.js migrate deploy",
+        "db:push:dev": "cross-env NODE_ENV=dev node scripts/prisma.js db push",
+        "db:push:test": "cross-env NODE_ENV=prod node scripts/prisma.js db push"
     },
     "devDependencies": {
         "@eslint/js": "^9.34.0",

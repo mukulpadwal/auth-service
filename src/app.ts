@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import fs from "node:fs/promises";
@@ -11,10 +10,10 @@ import type { HttpError } from "http-errors";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import authRouter from "./routes/auth.routes";
-import logger from "./config/logger";
-import { Config } from "./config";
-import ApiResponse from "./utils/ApiResponse";
+import authRouter from "./routes/auth.routes.js";
+import logger from "./config/logger.js";
+import { Config } from "./config/index.js";
+import ApiResponse from "./utils/ApiResponse.js";
 
 // Proper __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);

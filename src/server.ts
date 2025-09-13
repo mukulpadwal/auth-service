@@ -1,9 +1,7 @@
-import { PrismaClient } from "../generated/prisma/index.js";
 import app from "./app.js";
 import { Config } from "./config/index.js";
 import logger from "./config/logger.js";
-
-export const prisma = new PrismaClient();
+import { prisma } from "./prisma.js";
 
 const startServer = async () => {
     const PORT = Config.PORT;

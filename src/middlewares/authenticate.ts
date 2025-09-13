@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { expressjwt } from "express-jwt";
 import jwksClient from "jwks-rsa";
-import { Config } from "../config";
+import { Config } from "../config/index.js";
 
 export default expressjwt({
     secret: jwksClient.expressJwtSecret({
