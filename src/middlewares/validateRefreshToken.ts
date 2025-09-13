@@ -2,9 +2,8 @@ import { expressjwt } from "express-jwt";
 import { Config } from "../config";
 import { Request } from "express";
 import { AuthCookies, IRefreshTokenPayload } from "../types";
-import { AppDataSource } from "../config/data-source";
-import { RefreshToken } from "../entity/RefreshToken";
 import logger from "../config/logger";
+import { prisma } from "../server";
 
 export default expressjwt({
     secret: Config.JWT_REFRESH_TOKEN_SECRET!,
@@ -15,9 +14,7 @@ export default expressjwt({
     },
     isRevoked: async function (req: Request, token) {
         try {
-            const refreshTokenRepository =
-                AppDataSource.getRepository(RefreshToken);
-            const refreshToken = await refreshTokenRepository.findOne({
+            const refreshToken = await prisma.refreshToken.findFirst({
                 where: {
                     id: Number((token?.payload as IRefreshTokenPayload)?.id),
                     user: {

@@ -9,27 +9,24 @@ import {
 } from "vitest";
 import request from "supertest";
 import app from "../../src/app";
-import { DataSource } from "typeorm";
-import { AppDataSource } from "../../src/config/data-source";
-import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
 import { createJWKSMock } from "mock-jwks";
+import { prisma } from "../utils/index";
 
 describe("GET /api/v1/auth/self", () => {
-    let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
 
     // Will run once before executing the test cases
     beforeAll(async () => {
         jwks = createJWKSMock("http://localhost:8080/.well-known/jwks.json");
-        connection = await AppDataSource.initialize();
+        await prisma.$connect();
     });
 
     // Will run before every test case
     beforeEach(async () => {
         jwks.start();
-        await connection.dropDatabase();
-        await connection.synchronize();
+        await prisma.refreshToken.deleteMany({});
+        await prisma.user.deleteMany({});
     });
 
     afterEach(() => {
@@ -38,7 +35,7 @@ describe("GET /api/v1/auth/self", () => {
 
     // Will run once after executing all the test cases
     afterAll(async () => {
-        await connection.destroy();
+        await prisma.$disconnect();
     });
 
     it("should return 200 status code", async () => {
@@ -72,10 +69,11 @@ describe("GET /api/v1/auth/self", () => {
 
         // Act
         // Create new entry for the user
-        const userRepository = connection.getRepository(User);
-        const user = await userRepository.save({
-            ...userData,
-            role: Roles.CUSTOMER,
+        const user = await prisma.user.create({
+            data: {
+                ...userData,
+                role: Roles.CUSTOMER,
+            },
         });
 
         // Generate access token
@@ -104,10 +102,8 @@ describe("GET /api/v1/auth/self", () => {
         };
 
         // Act
-        const userRepository = connection.getRepository(User);
-        const user = await userRepository.save({
-            ...userData,
-            role: Roles.CUSTOMER,
+        const user = await prisma.user.create({
+            data: { ...userData, role: Roles.CUSTOMER },
         });
 
         const accessToken = jwks.token({

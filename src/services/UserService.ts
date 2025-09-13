@@ -1,17 +1,16 @@
 import createHttpError from "http-errors";
-import { type Repository } from "typeorm";
 import bcrypt from "bcrypt";
-import { User } from "../entity/User";
 import type { UserData } from "../types";
 import { Roles } from "../constants";
+import { PrismaClient } from "../../generated/prisma";
 
 // No framework related logic should be present here
 export default class UserService {
-    constructor(private userRepository: Repository<User>) {}
+    constructor(private user: PrismaClient["user"]) {}
 
     async create({ firstName, lastName, password, age, email }: UserData) {
-        const user = await this.userRepository.findOne({
-            where: { email: email },
+        const user = await this.user.findFirst({
+            where: { email },
         });
 
         if (user) {
@@ -27,13 +26,15 @@ export default class UserService {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
         try {
-            return await this.userRepository.save({
-                firstName,
-                lastName,
-                password: hashedPassword,
-                age,
-                email,
-                role: Roles.CUSTOMER,
+            return await this.user.create({
+                data: {
+                    firstName,
+                    lastName,
+                    password: hashedPassword,
+                    age,
+                    email,
+                    role: Roles.CUSTOMER,
+                },
             });
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
@@ -46,14 +47,14 @@ export default class UserService {
     }
 
     async findByEmail(email: string) {
-        return await this.userRepository.findOne({
-            where: { email: email },
+        return await this.user.findFirst({
+            where: { email },
         });
     }
 
     async findById(id: number) {
-        return await this.userRepository.findOne({
-            where: { id: id },
+        return await this.user.findFirst({
+            where: { id },
         });
     }
 }

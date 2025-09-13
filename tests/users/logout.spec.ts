@@ -1,5 +1,4 @@
 import createJWKSMock from "mock-jwks";
-import { DataSource } from "typeorm";
 import {
     afterAll,
     afterEach,
@@ -9,30 +8,27 @@ import {
     expect,
     it,
 } from "vitest";
-import { AppDataSource } from "../../src/config/data-source";
-import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
 import request from "supertest";
 import app from "../../src/app";
-import { RefreshToken } from "../../src/entity/RefreshToken";
 import jwt from "jsonwebtoken";
 import { Config } from "../../src/config";
+import { prisma } from "../utils/index";
 
 describe("POST /api/v1/auth/logout", () => {
-    let connection: DataSource;
     let jwks: ReturnType<typeof createJWKSMock>;
 
     // Will run once before executing the test cases
     beforeAll(async () => {
         jwks = createJWKSMock("http://localhost:8080/.well-known/jwks.json");
-        connection = await AppDataSource.initialize();
+        await prisma.$connect();
     });
 
     // Will run before every test case
     beforeEach(async () => {
         jwks.start();
-        await connection.dropDatabase();
-        await connection.synchronize();
+        await prisma.refreshToken.deleteMany({});
+        await prisma.user.deleteMany({});
     });
 
     afterEach(() => {
@@ -41,7 +37,7 @@ describe("POST /api/v1/auth/logout", () => {
 
     // Will run once after executing all the test cases
     afterAll(async () => {
-        await connection.destroy();
+        await prisma.$disconnect();
     });
 
     it("should return 401 if the user is not authenticated", async () => {
@@ -67,10 +63,12 @@ describe("POST /api/v1/auth/logout", () => {
         };
 
         // Act
-        const userRepository = connection.getRepository(User);
-        const user = await userRepository.save({
-            ...userData,
-            role: Roles.CUSTOMER,
+
+        const user = await prisma.user.create({
+            data: {
+                ...userData,
+                role: Roles.CUSTOMER,
+            },
         });
 
         const accessToken = jwks.token({
@@ -78,10 +76,11 @@ describe("POST /api/v1/auth/logout", () => {
             role: user.role,
         });
 
-        const refreshTokenRepository = connection.getRepository(RefreshToken);
-        const refreshTokenEntry = await refreshTokenRepository.save({
-            user,
-            expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+        const refreshTokenEntry = await prisma.refreshToken.create({
+            data: {
+                user: { connect: { id: user.id } },
+                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 365),
+            },
         });
 
         const refreshToken = jwt.sign(
@@ -106,7 +105,7 @@ describe("POST /api/v1/auth/logout", () => {
             ])
             .send();
 
-        const refreshTokens = await refreshTokenRepository.find();
+        const refreshTokens = await prisma.refreshToken.findMany();
 
         interface Headers {
             ["set-cookie"]: string[];

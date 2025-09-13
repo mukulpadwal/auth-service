@@ -7,11 +7,6 @@ dotenv.config({
 const {
     PORT,
     NODE_ENV,
-    DB_HOST,
-    DB_PORT,
-    DB_USERNAME,
-    DB_PASSWORD,
-    DB_NAME,
     JWT_REFRESH_TOKEN_SECRET,
     JWT_REFRESH_TOKEN_EXPIRY,
     JWT_REFRESH_TOKEN_ISSUER,
@@ -19,16 +14,12 @@ const {
     JWT_ACCESS_TOKEN_ISSUER,
     CLIENT_BASE_URL,
     JWKS_URI_ENDPOINT,
+    DATABASE_URL,
 } = process.env;
 
 export const Config = {
     PORT,
     NODE_ENV,
-    DB_HOST,
-    DB_PORT,
-    DB_USERNAME,
-    DB_PASSWORD,
-    DB_NAME,
     JWT_REFRESH_TOKEN_SECRET,
     JWT_REFRESH_TOKEN_EXPIRY,
     JWT_REFRESH_TOKEN_ISSUER,
@@ -36,4 +27,5 @@ export const Config = {
     JWT_ACCESS_TOKEN_ISSUER,
     CLIENT_BASE_URL,
     JWKS_URI_ENDPOINT,
+    DATABASE_URL,
 };

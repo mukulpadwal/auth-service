@@ -5,10 +5,7 @@ import {
     type Response,
 } from "express";
 import { AuthController } from "../controllers/AuthController";
-import { AppDataSource } from "../config/data-source";
-import { User } from "../entity/User";
 import logger from "../config/logger";
-import { RefreshToken } from "../entity/RefreshToken";
 import { AuthRequest } from "../types";
 import {
     authenticate,
@@ -17,20 +14,17 @@ import {
 } from "../middlewares";
 import { CredentialService, TokenService, UserService } from "../services";
 import { loginValidator, registerValidator } from "../validators";
+import { prisma } from "../server";
 
 const authRouter = Router();
 
 // Flow :
-// Repositories are injected into Services
+// Tables are injected into Services
 // Services are injected into controllers
 
-// Repositories
-const userRepository = AppDataSource.getRepository(User);
-const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
-
 // Services
-const userService = new UserService(userRepository);
-const tokenService = new TokenService(refreshTokenRepository);
+const userService = new UserService(prisma.user);
+const tokenService = new TokenService(prisma.refreshToken);
 const credentialService = new CredentialService();
 
 // Controller

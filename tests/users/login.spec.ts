@@ -1,28 +1,24 @@
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
-import { DataSource } from "typeorm";
-import { AppDataSource } from "../../src/config/data-source";
 import request from "supertest";
 import app from "../../src/app";
-import { User } from "../../src/entity/User";
 import { isJwt } from "../utils";
+import { prisma } from "../utils/index";
 
 describe("POST /api/vi/auth/login", () => {
-    let connection: DataSource;
-
     // Will run once before executing the test cases
     beforeAll(async () => {
-        connection = await AppDataSource.initialize();
+        await prisma.$connect();
     });
 
     // Will run before every test case
     beforeEach(async () => {
-        await connection.dropDatabase();
-        await connection.synchronize();
+        await prisma.refreshToken.deleteMany({});
+        await prisma.user.deleteMany({});
     });
 
     // Will run once after executing all the test cases
     afterAll(async () => {
-        await connection.destroy();
+        await prisma.$disconnect();
     });
 
     describe("All the necessary fields are provided.", () => {
@@ -88,10 +84,9 @@ describe("POST /api/vi/auth/login", () => {
                 .send({ email: userData.email, password: userData.password });
 
             // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.refreshToken.findMany();
 
-            expect(users[0].id).toBe(response.body.data.id);
+            expect(users[0].userId).toBe(response.body.data.id);
         });
 
         it("should return 400 status code for incorrect password", async () => {

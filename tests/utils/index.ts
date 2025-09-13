@@ -1,14 +1,9 @@
-import { DataSource } from "typeorm";
+import { Config } from "../../src/config/index";
+import { PrismaClient } from "../../generated/prisma";
 
-export const truncateTables = async (connection: DataSource) => {
-    // List of all the entities
-    const entities = connection.entityMetadatas;
-
-    for (const entity of entities) {
-        const repository = connection.getRepository(entity.name);
-        await repository.clear();
-    }
-};
+export const prisma = new PrismaClient({
+    datasources: { db: { url: Config.DATABASE_URL } },
+});
 
 export const isJwt = (token: string | null): boolean => {
     const parts = token?.split(".");

@@ -15,6 +15,7 @@ export default tseslint.config(
             "coverage",
             "tests",
             "scripts",
+            "generated"
         ],
     },
     {

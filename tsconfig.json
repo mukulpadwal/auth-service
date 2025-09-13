@@ -1,21 +1,18 @@
 {
-    "compilerOptions": {
-        "rootDir": ".",
-        "outDir": "./dist",
-        "module": "ESNext",
-        "moduleResolution": "node",
-        "target": "ESNext",
-        "types": ["node", "vitest/globals"],
-        "lib": ["ES6"],
-        "sourceMap": true,
-        "strict": true,
-        "esModuleInterop": true,
-        "isolatedModules": true,
-        "skipLibCheck": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "strictPropertyInitialization": false
-    },
-    "include": ["src/**/*.ts", "src/config/index.ts"],
-    "exclude": ["node_modules", "dist", "tests/**/*.ts", "coverage"]
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "types": ["node", "vitest/globals"],
+    "lib": ["ESNext"],
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "isolatedModules": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "coverage"]
 }

@@ -1,31 +1,26 @@
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
 import request from "supertest";
 import app from "../../src/app";
-import { DataSource } from "typeorm";
-import { AppDataSource } from "../../src/config/data-source";
-import { User } from "../../src/entity/User";
 import { Roles } from "../../src/constants";
 import { isJwt } from "../utils";
-import { RefreshToken } from "../../src/entity/RefreshToken";
+import { prisma } from "../utils/index";
 
 // Used to group multiple test cases
 describe("POST /api/v1/auth/register", () => {
-    let connection: DataSource;
-
     // Will run once before executing the test cases
     beforeAll(async () => {
-        connection = await AppDataSource.initialize();
+        await prisma.$connect();
     });
 
     // Will run before every test case
     beforeEach(async () => {
-        await connection.dropDatabase();
-        await connection.synchronize();
+        await prisma.refreshToken.deleteMany({});
+        await prisma.user.deleteMany({});
     });
 
     // Will run once after executing all the test cases
     afterAll(async () => {
-        await connection.destroy();
+        await prisma.$disconnect();
     });
 
     // Happy path
@@ -86,8 +81,7 @@ describe("POST /api/v1/auth/register", () => {
                 .send(userData);
 
             // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             expect(users).toHaveLength(1);
             expect(users[0].firstName).toBe(userData.firstName);
@@ -112,8 +106,7 @@ describe("POST /api/v1/auth/register", () => {
                 .send(userData);
 
             // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             expect(users[0].id).toEqual(response.body.data.id);
         });
@@ -134,8 +127,7 @@ describe("POST /api/v1/auth/register", () => {
                 .send(userData);
 
             // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             expect(users[0]).toHaveProperty("role");
             expect(users[0].role).toBe(Roles.CUSTOMER);
@@ -157,8 +149,7 @@ describe("POST /api/v1/auth/register", () => {
                 .send(userData);
 
             // Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             expect(users[0].password).not.toBe(userData.password);
             expect(users[0].password).toHaveLength(60);
@@ -175,15 +166,16 @@ describe("POST /api/v1/auth/register", () => {
                 password: "strongpassword",
             };
 
-            const userRepository = connection.getRepository(User);
-            await userRepository.save({ ...userData, role: Roles.CUSTOMER });
+            await prisma.user.create({
+                data: { ...userData, role: Roles.CUSTOMER },
+            });
 
             // Act
             const response = await request(app)
                 .post("/api/v1/auth/register")
                 .send(userData);
 
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             // Assert
             expect(response.statusCode).toBe(400);
@@ -249,16 +241,14 @@ describe("POST /api/v1/auth/register", () => {
                 .post("/api/v1/auth/register")
                 .send(userData);
 
+            const userId = (response.body.data as Record<string, string>).id;
+
             // Assert
-            const refreshTokenRepository =
-                connection.getRepository(RefreshToken);
-            // const refreshTokens = await refreshTokenRepository.find();
-            const refreshTokens = await refreshTokenRepository
-                .createQueryBuilder("refreshToken")
-                .where("refreshToken.userId = :userId", {
-                    userId: (response.body.data as Record<string, string>).id,
-                })
-                .getMany();
+            const refreshTokens = await prisma.refreshToken.findMany({
+                where: {
+                    userId: Number(userId), // make sure it's a number if your schema defines Int
+                },
+            });
 
             expect(refreshTokens).toHaveLength(1);
         });
@@ -279,8 +269,7 @@ describe("POST /api/v1/auth/register", () => {
                 .post("/api/v1/auth/register")
                 .send(userData);
 
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             // Assert
             expect(response.statusCode).toBe(400);
@@ -301,8 +290,7 @@ describe("POST /api/v1/auth/register", () => {
                 .post("/api/v1/auth/register")
                 .send(userData);
 
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             //Assert
             expect(response.statusCode).toBe(400);
@@ -323,8 +311,7 @@ describe("POST /api/v1/auth/register", () => {
                 .post("/api/v1/auth/register")
                 .send(userData);
 
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             //Assert
             expect(response.statusCode).toBe(400);
@@ -345,8 +332,7 @@ describe("POST /api/v1/auth/register", () => {
                 .post("/api/v1/auth/register")
                 .send(userData);
 
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             //Assert
             expect(response.statusCode).toBe(400);
@@ -372,8 +358,7 @@ describe("POST /api/v1/auth/register", () => {
                 .send(userData);
 
             //Assert
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
             const user = users[0];
 
             expect(user.email).toBe(userData.email.trim());
@@ -394,8 +379,7 @@ describe("POST /api/v1/auth/register", () => {
                 .post("/api/v1/auth/register")
                 .send(userData);
 
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             // Assert
             expect(response.statusCode).toBe(400);
@@ -417,8 +401,7 @@ describe("POST /api/v1/auth/register", () => {
                 .post("/api/v1/auth/register")
                 .send(userData);
 
-            const userRepository = connection.getRepository(User);
-            const users = await userRepository.find();
+            const users = await prisma.user.findMany();
 
             // Assert
             expect(response.statusCode).toBe(400);

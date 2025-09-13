@@ -4,12 +4,10 @@ import { fileURLToPath } from "node:url";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import createHttpError from "http-errors";
 import { Config } from "../config";
-import { Repository } from "typeorm";
-import { RefreshToken } from "../entity/RefreshToken";
-import { User } from "../entity/User";
+import { PrismaClient, User } from "../../generated/prisma";
 
 export default class TokenService {
-    constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
+    constructor(private refreshToken: PrismaClient["refreshToken"]) {}
 
     generateAccessToken(payload: JwtPayload) {
         let privateKey: Buffer;
@@ -54,15 +52,17 @@ export default class TokenService {
     async persistRefreshToken(user: User) {
         const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
-        const createdRefreshToken = await this.refreshTokenRepository.save({
-            user: user,
-            expiresAt: new Date(Date.now() + MS_IN_YEAR),
+        const createdRefreshToken = await this.refreshToken.create({
+            data: {
+                user: { connect: { id: user.id } },
+                expiresAt: new Date(Date.now() + MS_IN_YEAR),
+            },
         });
 
         return createdRefreshToken;
     }
 
     async deleteRefreshToken(tokenId: number) {
-        return await this.refreshTokenRepository.delete({ id: tokenId });
+        return await this.refreshToken.delete({ where: { id: tokenId } });
     }
 }
