@@ -1,6 +1,6 @@
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
-import type { UserData } from "../types/index.js";
+import type { IUserData } from "../types/index.js";
 import { Roles } from "../constants/index.js";
 import { PrismaClient } from "../../generated/prisma/index.js";
 
@@ -8,7 +8,7 @@ import { PrismaClient } from "../../generated/prisma/index.js";
 export default class UserService {
     constructor(private user: PrismaClient["user"]) {}
 
-    async create({ firstName, lastName, password, age, email }: UserData) {
+    async create({ firstName, lastName, password, age, email }: IUserData) {
         const user = await this.user.findFirst({
             where: { email },
         });

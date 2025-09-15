@@ -1,7 +1,7 @@
 export const Roles = {
-    CUSTOMER: "customer",
-    ADMIN: "admin",
-    MANAGER: "manager",
+    CUSTOMER: "CUSTOMER",
+    ADMIN: "ADMIN",
+    MANAGER: "MANAGER",
 } as const;
 
 export const CookieOptions = {

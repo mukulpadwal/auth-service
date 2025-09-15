@@ -1,7 +1,7 @@
 import type { Request } from "express";
 import { Jwt } from "jsonwebtoken";
 
-export interface UserData {
+export interface IUserData {
     firstName: string;
     lastName: string;
     password: string;
@@ -9,8 +9,13 @@ export interface UserData {
     email: string;
 }
 
+export interface ITenantData {
+    name: string;
+    address: string;
+}
+
 export interface UserRequest extends Request {
-    body: UserData;
+    body: IUserData;
 }
 
 export interface AuthRequest extends Request {
@@ -19,6 +24,10 @@ export interface AuthRequest extends Request {
         role: string;
         id: string;
     };
+}
+
+export interface TenantRequest extends Request {
+    body: ITenantData;
 }
 
 export type AuthCookies = {

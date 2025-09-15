@@ -4,7 +4,7 @@ import {
     type Request,
     type Response,
 } from "express";
-import { AuthController } from "../controllers/AuthController.js";
+import { AuthController } from "../controllers/index.js";
 import logger from "../config/logger.js";
 import { AuthRequest } from "../types/index.js";
 import {

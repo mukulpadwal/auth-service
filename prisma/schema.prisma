@@ -28,13 +28,13 @@ model User {
   age       Int
   password  String
   role      UserRole @default(CUSTOMER)
-  tenantId  Int
+  tenantId  Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relation Field
   refreshTokens RefreshToken[]
-  tenant        Tenant         @relation(fields: [tenantId], references: [id])
+  tenant        Tenant?         @relation(fields: [tenantId], references: [id])
 
   @@map("users")
 }

@@ -13,7 +13,7 @@ import {
 import { CookieOptions } from "../constants/index.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
-export class AuthController {
+export default class AuthController {
     constructor(
         private userService: UserService,
         private logger: Logger,

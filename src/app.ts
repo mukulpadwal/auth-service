@@ -10,7 +10,7 @@ import type { HttpError } from "http-errors";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
-import authRouter from "./routes/auth.routes.js";
+import { authRouter, tenantRouter } from "./routes/index.js";
 import logger from "./config/logger.js";
 import { Config } from "./config/index.js";
 import ApiResponse from "./utils/ApiResponse.js";
@@ -42,6 +42,7 @@ app.get("/health-check", (_, res) => {
 });
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/tenants", tenantRouter);
 
 // Global Error Handler
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
