@@ -9,4 +9,12 @@ export default class TenantService {
             data: tenantData,
         });
     }
+
+    async listAll() {
+        return await this.tenant.findMany({});
+    }
+
+    async getById(tenantId: number) {
+        return await this.tenant.findFirst({ where: { id: tenantId } });
+    }
 }
