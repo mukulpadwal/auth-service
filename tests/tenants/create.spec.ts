@@ -1,17 +1,33 @@
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import {
+    afterAll,
+    afterEach,
+    beforeAll,
+    beforeEach,
+    describe,
+    expect,
+    it,
+} from "vitest";
 import { prisma } from "../utils";
 import request from "supertest";
 import app from "../../src/app";
+import createJWKSMock from "mock-jwks";
+import { Roles } from "../../src/constants";
 
 describe("POST /api/v1/tenants", () => {
+    let jwks: ReturnType<typeof createJWKSMock>;
+
     beforeAll(async () => {
+        jwks = createJWKSMock("http://localhost:8080/.well-known/jwks.json");
         await prisma.$connect();
     });
 
     beforeEach(async () => {
-        await prisma.refreshToken.deleteMany({});
-        await prisma.user.deleteMany({});
+        jwks.start();
         await prisma.tenant.deleteMany({});
+    });
+
+    afterEach(() => {
+        jwks.stop();
     });
 
     afterAll(async () => {
@@ -27,8 +43,14 @@ describe("POST /api/v1/tenants", () => {
             };
 
             // Act
+            const adminAccessToken = jwks.token({
+                sub: "1",
+                role: Roles.ADMIN,
+            });
+
             const response = await request(app)
                 .post("/api/v1/tenants")
+                .set("Cookie", [`accessToken=${adminAccessToken};`])
                 .send(tenantData);
 
             // Assert
@@ -52,6 +74,44 @@ describe("POST /api/v1/tenants", () => {
             // Assert
             expect(tenant.name).toBe(tenantData.name);
             expect(tenant.address).toBe(tenantData.address);
+        });
+
+        it("should return 401 if user is not authenticated", async () => {
+            // Arrange
+            const tenantData = {
+                name: "Test Tenant 1",
+                address: "Test Tenant 1 Address",
+            };
+
+            // Act
+            const response = await request(app)
+                .post("/api/v1/tenants")
+                .send(tenantData);
+
+            // Assert
+            expect(response.statusCode).toBe(401);
+        });
+
+        it("should return 403 if the user is not an ADMIN", async () => {
+            // Arrange
+            const tenantData = {
+                name: "Test Tenant 1",
+                address: "Test Tenant 1 Address",
+            };
+
+            // Act
+            const managerAccessToken = jwks.token({
+                sub: "1",
+                role: Roles.MANAGER,
+            });
+
+            const response = await request(app)
+                .post("/api/v1/tenants")
+                .set("Cookie", [`accessToken=${managerAccessToken};`])
+                .send(tenantData);
+
+            // Assert
+            expect(response.statusCode).toBe(403);
         });
     });
 });
