@@ -30,7 +30,7 @@ let jwksCache = "";
 (async () => {
     const jwksPath = path.join(__dirname, "../public/.well-known/jwks.json");
     jwksCache = await fs.readFile(jwksPath, "utf8");
-})().catch((error) => console.log(error));
+})().catch((error) => logger.error(error));
 
 app.get("/.well-known/jwks.json", (_, res: Response) => {
     res.setHeader("Content-Type", "application/json");
