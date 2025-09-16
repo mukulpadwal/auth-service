@@ -68,13 +68,6 @@ export default class TenantController {
     }
 
     async update(req: TenantRequest, res: Response, next: NextFunction) {
-        // Validation
-        const result = validationResult(req);
-
-        if (!result.isEmpty()) {
-            return res.status(400).json({ errors: result.array() });
-        }
-
         const { tenantId } = req.params;
         const { name, address } = req.body;
 
@@ -95,6 +88,21 @@ export default class TenantController {
                     updatedTenant
                 )
             );
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async delete(req: TenantRequest, res: Response, next: NextFunction) {
+        const { tenantId } = req.params;
+        try {
+            this.logger.debug("Request to delete tenant with id", {
+                id: tenantId,
+            });
+            await this.tenantService.delete(Number(tenantId));
+            this.logger.debug("Tenant deleted.", { id: tenantId });
+
+            res.status(204).json(new ApiResponse(204, "Tenant deleted."));
         } catch (error) {
             next(error);
         }

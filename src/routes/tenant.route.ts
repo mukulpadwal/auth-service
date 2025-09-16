@@ -52,4 +52,12 @@ tenantRouter.patch(
         tenantController.update(req, res, next)
 );
 
+tenantRouter.delete(
+    "/:tenantId",
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    (req: Request, res: Response, next: NextFunction) =>
+        tenantController.delete(req, res, next)
+);
+
 export default tenantRouter;

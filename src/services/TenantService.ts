@@ -24,4 +24,10 @@ export default class TenantService {
             data: tenantData,
         });
     }
+
+    async delete(tenantId: number) {
+        await this.tenant.delete({
+            where: { id: tenantId },
+        });
+    }
 }
