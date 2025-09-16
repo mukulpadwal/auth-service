@@ -44,4 +44,12 @@ tenantRouter.get(
         tenantController.getById(req, res, next)
 );
 
+tenantRouter.patch(
+    "/:tenantId",
+    authenticate,
+    canAccess([Roles.ADMIN]),
+    (req: Request, res: Response, next: NextFunction) =>
+        tenantController.update(req, res, next)
+);
+
 export default tenantRouter;

@@ -68,6 +68,38 @@ describe("GET /api/v1", () => {
             // Assert
             expect(response.statusCode).toBe(403);
         });
+
+        it("should return an array of length 2", async () => {
+            // Arrange
+            const tenantData = [
+                {
+                    name: "Tenant 1",
+                    address: "Tenant 1 Address",
+                },
+                {
+                    name: "Tenant 2",
+                    address: "Tenant 2 Address",
+                },
+            ];
+
+            // Act
+            await prisma.tenant.createMany({
+                data: tenantData,
+            });
+
+            const accessToken = jwks.token({
+                sub: "1",
+                role: Roles.ADMIN,
+            });
+
+            const response = await request(app)
+                .get("/api/v1/tenants")
+                .set("Cookie", [`accessToken=${accessToken};`]);
+
+            // Assert
+            expect(response.statusCode).toBe(200);
+            expect(response.body.data).toHaveLength(2);
+        });
     });
 
     describe("/tenants/:tenantId", () => {

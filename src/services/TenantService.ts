@@ -1,5 +1,5 @@
-import { PrismaClient } from "../../generated/prisma";
-import { ITenantData } from "../types";
+import { PrismaClient } from "../../generated/prisma/index.js";
+import { ITenantData } from "../types/index.js";
 
 export default class TenantService {
     constructor(private tenant: PrismaClient["tenant"]) {}
@@ -16,5 +16,12 @@ export default class TenantService {
 
     async getById(tenantId: number) {
         return await this.tenant.findFirst({ where: { id: tenantId } });
+    }
+
+    async update(tenantId: number, tenantData: ITenantData) {
+        return await this.tenant.update({
+            where: { id: tenantId },
+            data: tenantData,
+        });
     }
 }

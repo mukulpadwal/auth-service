@@ -1,7 +1,7 @@
 import { Response, NextFunction } from "express";
 import { Logger } from "winston";
 import { TenantService } from "../services/index.js";
-import { TenantRequest } from "../types";
+import { TenantRequest } from "../types/index.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { validationResult } from "express-validator";
 
@@ -61,6 +61,39 @@ export default class TenantController {
 
             return res.json(
                 new ApiResponse(200, "Tenant data fetched.", tenant)
+            );
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async update(req: TenantRequest, res: Response, next: NextFunction) {
+        // Validation
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
+
+        const { tenantId } = req.params;
+        const { name, address } = req.body;
+
+        try {
+            this.logger.debug("Request to update tenant information with id", {
+                id: tenantId,
+            });
+            const updatedTenant = await this.tenantService.update(
+                Number(tenantId),
+                { name, address }
+            );
+            this.logger.debug("Tenant updated.", updatedTenant);
+
+            res.status(200).json(
+                new ApiResponse(
+                    200,
+                    "Tenant Updates Successfully.",
+                    updatedTenant
+                )
             );
         } catch (error) {
             next(error);
