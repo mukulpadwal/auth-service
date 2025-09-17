@@ -15,6 +15,7 @@ const {
     CLIENT_BASE_URL,
     JWKS_URI_ENDPOINT,
     DATABASE_URL,
+    PRIVATE_KEY,
 } = process.env;
 
 export const Config = {
@@ -28,4 +29,5 @@ export const Config = {
     CLIENT_BASE_URL,
     JWKS_URI_ENDPOINT,
     DATABASE_URL,
+    PRIVATE_KEY,
 };

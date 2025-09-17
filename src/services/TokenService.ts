@@ -1,6 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import createHttpError from "http-errors";
 import { Config } from "../config/index.js";
@@ -10,15 +7,16 @@ export default class TokenService {
     constructor(private refreshToken: PrismaClient["refreshToken"]) {}
 
     generateAccessToken(payload: JwtPayload) {
-        let privateKey: Buffer;
+        let privateKey: string;
+
+        if (!Config.PRIVATE_KEY) {
+            const error = createHttpError(500, "PRIVATE_KEY is missing.");
+            throw error;
+        }
 
         try {
-            const __filename = fileURLToPath(import.meta.url);
-            const __dirname = path.dirname(__filename);
+            privateKey = Config.PRIVATE_KEY;
 
-            privateKey = fs.readFileSync(
-                path.join(__dirname, "../../certs/privateKey.pem")
-            );
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (err) {
             const error = createHttpError(500, "Could not read private key.");
