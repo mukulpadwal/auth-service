@@ -10,7 +10,7 @@ import {
     TokenService,
     UserService,
 } from "../services/index.js";
-import { CookieOptions } from "../constants/index.js";
+import { CookieOptions, Roles } from "../constants/index.js";
 import ApiResponse from "../utils/ApiResponse.js";
 
 export default class AuthController {
@@ -46,6 +46,7 @@ export default class AuthController {
                 password,
                 age,
                 email,
+                role: Roles.CUSTOMER,
             });
 
             this.logger.info("User has been registered", { id: user.id });
