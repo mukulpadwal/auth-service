@@ -1,3 +1,1 @@
-```
-docker run -d -rm --name
-```
+# Auth Service
