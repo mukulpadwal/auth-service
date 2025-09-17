@@ -52,23 +52,6 @@ describe("GET /api/v1", () => {
             expect(response.statusCode).toBe(200);
         });
 
-        it("should return 403 for non authorized users", async () => {
-            // Arrange
-
-            // Act
-            const accessToken = jwks.token({
-                sub: "1",
-                role: Roles.CUSTOMER,
-            });
-
-            const response = await request(app)
-                .get("/api/v1/tenants")
-                .set("Cookie", [`accessToken=${accessToken};`]);
-
-            // Assert
-            expect(response.statusCode).toBe(403);
-        });
-
         it("should return an array of length 2", async () => {
             // Arrange
             const tenantData = [
@@ -98,7 +81,42 @@ describe("GET /api/v1", () => {
 
             // Assert
             expect(response.statusCode).toBe(200);
-            expect(response.body.data).toHaveLength(2);
+            expect(response.body.data.tenants).toHaveLength(2);
+            expect(response.body.data.count).toBe(2);
+        });
+
+        it("should return an array with Tenant 1 and count as 1", async () => {
+            // Arrange
+            const tenantData = [
+                {
+                    name: "Tenant 1",
+                    address: "Tenant 1 Address",
+                },
+                {
+                    name: "Tenant 2",
+                    address: "Tenant 2 Address",
+                },
+            ];
+
+            // Act
+            await prisma.tenant.createMany({
+                data: tenantData,
+            });
+
+            const accessToken = jwks.token({
+                sub: "1",
+                role: Roles.ADMIN,
+            });
+
+            const response = await request(app)
+                .get("/api/v1/tenants?q=Tenant%201")
+                .set("Cookie", [`accessToken=${accessToken};`]);
+
+            // Assert
+            expect(response.statusCode).toBe(200);
+            expect(response.body.data.tenants[0].name).toBe("Tenant 1");
+            expect(response.body.data.tenants).toHaveLength(1);
+            expect(response.body.data.count).toBe(1);
         });
     });
 

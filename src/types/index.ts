@@ -7,6 +7,8 @@ export interface IUserData {
     password: string;
     age: number;
     email: string;
+    role: "ADMIN" | "MANAGER" | "CUSTOMER";
+    tenantId?: number;
 }
 
 export interface ITenantData {
@@ -37,4 +39,10 @@ export type AuthCookies = {
 
 export interface IRefreshTokenPayload extends Jwt {
     id: string;
+}
+
+export interface ITenantQueryParams {
+    q: string;
+    perPage: number;
+    currentPage: number;
 }

@@ -1,5 +1,5 @@
 import { PrismaClient } from "../../generated/prisma/index.js";
-import { ITenantData } from "../types/index.js";
+import { ITenantData, ITenantQueryParams } from "../types/index.js";
 
 export default class TenantService {
     constructor(private tenant: PrismaClient["tenant"]) {}
@@ -10,8 +10,39 @@ export default class TenantService {
         });
     }
 
-    async listAll() {
-        return await this.tenant.findMany({});
+    async listAll(validatedQuery: ITenantQueryParams) {
+        const { q, currentPage, perPage } = validatedQuery;
+
+        const whereClause = q
+            ? {
+                  OR: [
+                      {
+                          name: {
+                              contains: q,
+                              mode: "insensitive" as const,
+                          },
+                      },
+                      {
+                          address: {
+                              contains: q,
+                              mode: "insensitive" as const,
+                          },
+                      },
+                  ],
+              }
+            : {};
+
+        const [tenants, count] = await Promise.all([
+            this.tenant.findMany({
+                where: whereClause,
+                skip: (currentPage - 1) * perPage,
+                take: perPage,
+                orderBy: { id: "desc" },
+            }),
+            this.tenant.count({ where: whereClause }),
+        ]);
+
+        return [tenants, count];
     }
 
     async getById(tenantId: number) {

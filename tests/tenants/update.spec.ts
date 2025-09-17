@@ -44,6 +44,7 @@ describe("PATCH /api/v1/tenants/:tenantId", async () => {
 
             const tenantDataToUpdate = {
                 name: "Updated Tenant 1",
+                address: tenantData.address,
             };
 
             // Act
@@ -76,6 +77,7 @@ describe("PATCH /api/v1/tenants/:tenantId", async () => {
 
             const tenantDataToUpdate = {
                 name: "Updated Tenant 1",
+                address: tenantData.address,
             };
 
             // Act

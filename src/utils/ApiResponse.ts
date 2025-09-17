@@ -1,3 +1,5 @@
+import { ValidationError } from "express-validator";
+
 export default class ApiResponse {
     success: boolean;
 
@@ -5,7 +7,7 @@ export default class ApiResponse {
         private status: number,
         private message: string,
         private data: null | object = null,
-        private errors?: [Record<string, string>]
+        private errors?: [Record<string, string>] | ValidationError[]
     ) {
         this.success = status < 400;
         this.data = data;

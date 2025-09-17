@@ -1,9 +1,10 @@
 import { Response, NextFunction } from "express";
 import { Logger } from "winston";
 import { TenantService } from "../services/index.js";
-import { TenantRequest } from "../types/index.js";
+import { ITenantQueryParams, TenantRequest } from "../types/index.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import { validationResult } from "express-validator";
+import { matchedData, validationResult } from "express-validator";
+import createHttpError from "http-errors";
 
 export default class TenantController {
     constructor(
@@ -16,15 +17,26 @@ export default class TenantController {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
-            return res.status(400).json({ errors: result.array() });
+            return res
+                .status(400)
+                .json(
+                    new ApiResponse(
+                        200,
+                        "Validation Error",
+                        null,
+                        result.array()
+                    )
+                );
         }
 
         const { name, address } = req.body;
 
         try {
             this.logger.debug("New request to create a tenant.", req.body);
+
             const tenant = await this.tenantService.create({ name, address });
-            this.logger.debug("Tenant created successfuly.", tenant);
+
+            this.logger.debug("Tenant created successfuly.", tenant.id);
 
             res.status(201).json(
                 new ApiResponse(200, "Tenant created successfully.", tenant)
@@ -35,50 +47,95 @@ export default class TenantController {
         }
     }
 
-    async list(req: TenantRequest, res: Response, next: NextFunction) {
+    async listAll(req: TenantRequest, res: Response, next: NextFunction) {
+        const validatedQuery = matchedData(req, { onlyValidData: true });
+
         try {
             this.logger.debug("Request to list all the tenants");
 
-            const tenants = await this.tenantService.listAll();
+            const [tenants, count] = await this.tenantService.listAll(
+                validatedQuery as ITenantQueryParams
+            );
 
             return res.json(
-                new ApiResponse(200, "Tenants data fetched.", tenants)
+                new ApiResponse(200, "Tenants data fetched.", {
+                    tenants,
+                    count,
+                })
             );
         } catch (error) {
             next(error);
+            return;
         }
     }
 
     async getById(req: TenantRequest, res: Response, next: NextFunction) {
+        const { tenantId } = req.params;
+
+        if (isNaN(Number(tenantId))) {
+            const error = createHttpError(400, "Invalid URL param");
+            next(error);
+            return;
+        }
+
         try {
             this.logger.info("Request to list tenant with is", {
-                id: req.params.tenantId,
+                id: tenantId,
             });
 
-            const tenant = await this.tenantService.getById(
-                Number(req.params.tenantId)
-            );
+            const tenant = await this.tenantService.getById(Number(tenantId));
+
+            if (!tenant) {
+                const error = createHttpError(400, "Tenant does not exist.");
+                next(error);
+                return;
+            }
 
             return res.json(
                 new ApiResponse(200, "Tenant data fetched.", tenant)
             );
         } catch (error) {
             next(error);
+            return;
         }
     }
 
     async update(req: TenantRequest, res: Response, next: NextFunction) {
+        // Validation
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            return res
+                .status(400)
+                .json(
+                    new ApiResponse(
+                        200,
+                        "Validation Error",
+                        null,
+                        result.array()
+                    )
+                );
+        }
+
         const { tenantId } = req.params;
         const { name, address } = req.body;
+
+        if (isNaN(Number(tenantId))) {
+            const error = createHttpError(400, "Invalid URL param");
+            next(error);
+            return;
+        }
 
         try {
             this.logger.debug("Request to update tenant information with id", {
                 id: tenantId,
             });
+
             const updatedTenant = await this.tenantService.update(
                 Number(tenantId),
                 { name, address }
             );
+
             this.logger.debug("Tenant updated.", updatedTenant);
 
             res.status(200).json(
@@ -90,16 +147,26 @@ export default class TenantController {
             );
         } catch (error) {
             next(error);
+            return;
         }
     }
 
     async delete(req: TenantRequest, res: Response, next: NextFunction) {
         const { tenantId } = req.params;
+
+        if (isNaN(Number(tenantId))) {
+            const error = createHttpError(400, "Invalid URL param");
+            next(error);
+            return;
+        }
+
         try {
             this.logger.debug("Request to delete tenant with id", {
                 id: tenantId,
             });
+
             await this.tenantService.delete(Number(tenantId));
+
             this.logger.debug("Tenant deleted.", { id: tenantId });
 
             res.status(204).json(new ApiResponse(204, "Tenant deleted."));
