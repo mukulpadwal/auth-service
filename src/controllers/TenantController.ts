@@ -61,6 +61,8 @@ export default class TenantController {
                 new ApiResponse(200, "Tenants data fetched.", {
                     tenants,
                     count,
+                    currentPage: validatedQuery.currentPage as number,
+                    perPage: validatedQuery.perPage as number,
                 })
             );
         } catch (error) {

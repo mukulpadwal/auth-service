@@ -6,7 +6,7 @@ import {
 } from "express";
 import { AuthController } from "../controllers/index.js";
 import logger from "../config/logger.js";
-import { AuthRequest } from "../types/index.js";
+import { IAuthRequest } from "../types/index.js";
 import {
     authenticate,
     parseRefreshToken,
@@ -54,14 +54,14 @@ authRouter.post(
 );
 
 authRouter.get("/self", authenticate, (req: Request, res: Response) =>
-    authController.self(req as AuthRequest, res)
+    authController.self(req as IAuthRequest, res)
 );
 
 authRouter.post(
     "/refresh",
     validateRefreshToken,
     (req: Request, res: Response, next: NextFunction) =>
-        authController.refresh(req as AuthRequest, res, next)
+        authController.refresh(req as IAuthRequest, res, next)
 );
 
 authRouter.post(
@@ -69,7 +69,7 @@ authRouter.post(
     authenticate,
     parseRefreshToken,
     (req: Request, res: Response, next: NextFunction) =>
-        authController.logout(req as AuthRequest, res, next)
+        authController.logout(req as IAuthRequest, res, next)
 );
 
 export default authRouter;

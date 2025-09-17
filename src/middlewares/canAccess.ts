@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { Roles } from "../constants/index.js";
-import { AuthRequest } from "../types";
+import { IAuthRequest } from "../types";
 import createHttpError from "http-errors";
 
 type Role = (typeof Roles)[keyof typeof Roles];
 
 const canAccess = (allowedRoles: Role[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const _req = req as AuthRequest;
+        const _req = req as IAuthRequest;
         const roleFromToken = _req.auth.role as Role;
 
         if (!allowedRoles.includes(roleFromToken)) {

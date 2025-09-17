@@ -1,6 +1,6 @@
 import type { NextFunction, Response } from "express";
 
-import type { AuthRequest, UserRequest } from "../types/index.js";
+import type { IAuthRequest, IUserRequest } from "../types/index.js";
 import type { Logger } from "winston";
 import { validationResult } from "express-validator";
 import { JwtPayload } from "jsonwebtoken";
@@ -21,7 +21,7 @@ export default class AuthController {
         private credentialService: CredentialService
     ) {}
 
-    async register(req: UserRequest, res: Response, next: NextFunction) {
+    async register(req: IUserRequest, res: Response, next: NextFunction) {
         // Validation
         const result = validationResult(req);
 
@@ -88,7 +88,7 @@ export default class AuthController {
         }
     }
 
-    async login(req: UserRequest, res: Response, next: NextFunction) {
+    async login(req: IUserRequest, res: Response, next: NextFunction) {
         // Validation
         const result = validationResult(req);
 
@@ -163,7 +163,7 @@ export default class AuthController {
         }
     }
 
-    async self(req: AuthRequest, res: Response) {
+    async self(req: IAuthRequest, res: Response) {
         const user = await this.userService.findById(Number(req.auth.sub));
 
         return res.json(
@@ -174,7 +174,7 @@ export default class AuthController {
         );
     }
 
-    async refresh(req: AuthRequest, res: Response, next: NextFunction) {
+    async refresh(req: IAuthRequest, res: Response, next: NextFunction) {
         try {
             const user = await this.userService.findById(Number(req.auth.sub));
 
@@ -222,7 +222,7 @@ export default class AuthController {
         }
     }
 
-    async logout(req: AuthRequest, res: Response, next: NextFunction) {
+    async logout(req: IAuthRequest, res: Response, next: NextFunction) {
         try {
             await this.tokenService.deleteRefreshToken(Number(req.auth.id));
             this.logger.info("Refresh token deleted", { tokenId: req.auth.id });

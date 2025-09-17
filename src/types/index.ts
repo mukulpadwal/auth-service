@@ -1,5 +1,8 @@
 import type { Request } from "express";
 import { Jwt } from "jsonwebtoken";
+import { Roles } from "../constants/index.js";
+
+export type UserRole = keyof typeof Roles;
 
 export interface IUserData {
     firstName: string;
@@ -7,7 +10,7 @@ export interface IUserData {
     password: string;
     age: number;
     email: string;
-    role: "ADMIN" | "MANAGER" | "CUSTOMER";
+    role: UserRole;
     tenantId?: number;
 }
 
@@ -16,11 +19,15 @@ export interface ITenantData {
     address: string;
 }
 
-export interface UserRequest extends Request {
+export interface IUserRequest extends Request {
     body: IUserData;
 }
 
-export interface AuthRequest extends Request {
+export interface IUpdateUserRequest extends Request {
+    body: Omit<IUserData, "password">;
+}
+
+export interface IAuthRequest extends Request {
     auth: {
         sub: string;
         role: string;
@@ -43,6 +50,13 @@ export interface IRefreshTokenPayload extends Jwt {
 
 export interface ITenantQueryParams {
     q: string;
+    perPage: number;
+    currentPage: number;
+}
+
+export interface IUserQueryParams {
+    q: string;
+    role: UserRole;
     perPage: number;
     currentPage: number;
 }
