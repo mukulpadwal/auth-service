@@ -26,7 +26,7 @@ jobs:
                   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
                   DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
                   JWKS_URI_ENDPOINT: ${{ secrets.JWKS_URI_ENDPOINT }}
-                  JWT_REFRESH_TOKEN_ENDPOINT: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
+                  JWT_REFRESH_TOKEN_SECRET: ${{ secrets.JWT_REFRESH_TOKEN_SECRET }}
                   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
                   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
