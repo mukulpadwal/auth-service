@@ -20,7 +20,7 @@ jobs:
               run: npm run lint:check
 
             - name: Test and Coverage
-              run: npm run test
+              run: npm run db:migrate:test & npm run test
               env:
                   DATABASE_URL: ${{ secrets.DATABASE_URL }}
                   DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
