@@ -5,7 +5,7 @@ import { Config } from "../config/index.js";
 
 export default expressjwt({
     secret: jwksClient.expressJwtSecret({
-        jwksUri: Config.JWKS_URI_ENDPOINT!,
+        jwksUri: Config.JWKS_URI_ENDPOINT,
         cache: true,
         rateLimit: true,
     }),

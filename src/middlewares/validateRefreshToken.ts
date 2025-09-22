@@ -6,7 +6,7 @@ import logger from "../config/logger.js";
 import { prisma } from "../prisma.js";
 
 export default expressjwt({
-    secret: Config.JWT_REFRESH_TOKEN_SECRET!,
+    secret: Config.JWT_REFRESH_TOKEN_SECRET,
     algorithms: ["HS256"],
     getToken: function (req: Request) {
         const { refreshToken } = req.cookies as AuthCookies;
