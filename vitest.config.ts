@@ -5,8 +5,11 @@ export default defineConfig({
         globals: true,
         environment: "node",
         fileParallelism: false,
+        maxConcurrency: 1,
+        testTimeout: 20000,
         coverage: {
-            provider: "v8",
+            provider: "istanbul",
+            reporter: ["text", "lcov"],
             include: ["src/**/*.ts", "!tests/**", "!**/node_modules/**"],
         },
     },

@@ -57,12 +57,16 @@ export default class UserService {
     async findByEmail(email: string) {
         return await this.user.findFirst({
             where: { email },
+            include: {
+                tenant: true,
+            },
         });
     }
 
     async findById(id: number) {
         return await this.user.findFirst({
             where: { id },
+            include: { tenant: true },
         });
     }
 
