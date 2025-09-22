@@ -50,8 +50,8 @@ jobs:
               env:
                   DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
                   NODE_ENV: test
-                  REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
-                  JWKS_URI: ${{ secrets.JWKS_URI }}
+                  JWT_REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+                  JWKS_URI_ENDPOINT: ${{ secrets.JWKS_URI }}
                   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
             - name: Generate Coverage Report
@@ -59,8 +59,8 @@ jobs:
               env:
                   DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
                   NODE_ENV: test
-                  REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
-                  JWKS_URI: ${{ secrets.JWKS_URI }}
+                  JWT_REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+                  JWKS_URI_ENDPOINT: ${{ secrets.JWKS_URI }}
                   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
 
             - name: Reset database after tests
