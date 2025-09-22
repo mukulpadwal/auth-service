@@ -1,11 +1,44 @@
 import createHttpError from "http-errors";
-import bcrypt from "bcrypt";
-import type { IUserData, IUserQueryParams } from "../types/index.js";
+import bcrypt from "bcryptjs";
+import type { IUserData, IUserQueryParams, UserRole } from "../types/index.js";
 import { PrismaClient } from "../../generated/prisma/index.js";
+import { Config } from "../config/index.js";
 
 // No framework related logic should be present here
 export default class UserService {
     constructor(private user: PrismaClient["user"]) {}
+
+    async createAdminUserIfNotExists() {
+        // Hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(
+            Config.ADMIN_PASSWORD,
+            saltRounds
+        );
+
+        try {
+            return await this.user.upsert({
+                where: { email: Config.ADMIN_EMAIL },
+                create: {
+                    firstName: Config.ADMIN_FIRSTNAME,
+                    lastName: Config.ADMIN_LASTNAME,
+                    password: hashedPassword,
+                    age: Config.ADMIN_AGE,
+                    email: Config.ADMIN_EMAIL,
+                    role: Config.ADMIN_ROLE as UserRole,
+                },
+                update: {}, // do nothing if exists
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+            const customError = createHttpError(
+                500,
+                `Failed to store the data in th DB`
+            );
+            throw customError;
+        }
+    }
 
     async create({
         firstName,
