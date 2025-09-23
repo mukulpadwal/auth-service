@@ -11,12 +11,14 @@ RUN npm ci
 
 COPY . .
 
+RUN npm run generate:prisma
+
 RUN npm run build
 
 # STAGE 2: Preparing production build
 FROM node:22-alpine AS production
 
-ENV NODE_ENV=production
+ENV NODE_ENV=prod
 
 WORKDIR /app
 

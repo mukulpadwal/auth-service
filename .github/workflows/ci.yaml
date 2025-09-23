@@ -143,12 +143,6 @@ jobs:
         steps:
             - uses: actions/checkout@v5
 
-            - name: Download build artifact
-              uses: actions/download-artifact@v4
-              with:
-                  name: dist
-                  path: dist/
-
             - name: Log in to Docker Hub
               uses: docker/login-action@v3
               with:
